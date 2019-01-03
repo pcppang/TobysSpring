@@ -10,8 +10,7 @@ import com.david.tobysspring.user.domain.User;
 
 public class UserDao {
 	public void add(User user) throws ClassNotFoundException, SQLException {
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "spring", "book");
+		Connection c = getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("INSERT INTO USERS(ID, NAME, PASSWORD) VALUES (?, ?, ?)");
 		ps.setString(1, user.getId());
@@ -25,8 +24,7 @@ public class UserDao {
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException {
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "spring", "book");
+		Connection c = getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("SELECT * FROM USERS WHERE ID = ?");
 		ps.setString(1, id);
@@ -43,6 +41,13 @@ public class UserDao {
 		c.close();
 		
 		return user;
+	}
+	
+	public Connection getConnection() throws ClassNotFoundException, SQLException {
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "spring", "book");
+		
+		return c;
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
