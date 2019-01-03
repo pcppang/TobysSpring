@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 import com.david.tobysspring.user.domain.User;
 
-public class UserDao {
+public abstract class UserDao {
 	public void add(User user) throws ClassNotFoundException, SQLException {
 		Connection c = getConnection();
 		
@@ -43,15 +43,10 @@ public class UserDao {
 		return user;
 	}
 	
-	public Connection getConnection() throws ClassNotFoundException, SQLException {
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "spring", "book");
-		
-		return c;
-	}
+	public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
-		UserDao dao = new UserDao();
+		NUserDao dao = new NUserDao();
 		
 		User user = new User();
 		user.setId("whiteship");
@@ -67,5 +62,27 @@ public class UserDao {
 		System.out.println(user2.getPassword());
 		
 		System.out.println(user2.getId() + "조회 성공");
+	}
+}
+
+// Oracle을 사용하는 N사의 UserDao
+class NUserDao extends UserDao {
+	@Override
+	public Connection getConnection() throws ClassNotFoundException, SQLException{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "spring", "book");
+	
+		return c;
+	}
+}
+
+// MySql을 사용하는 D사의 UserDao
+class DUserDao extends UserDao {
+	@Override
+	public Connection getConnection() throws ClassNotFoundException, SQLException{
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection c = DriverManager.getConnection("jdbc:mysql://localhost/springbook", "spring", "book");
+	
+		return c;
 	}
 }
