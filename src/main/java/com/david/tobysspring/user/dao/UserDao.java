@@ -9,16 +9,14 @@ import com.david.tobysspring.user.domain.User;
 
 public class UserDao {
 	
-	// 인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보 알 필요 없음 
 	private ConnectionMaker connectionMaker;
 	
-	public UserDao() {
-		// 그러나 여기에 클래스 이름이 나옴 
-		connectionMaker = new DConnectionMaker();		
+	public UserDao(ConnectionMaker connectionMaker) {
+		// 구체적인 구현 클래스의 이름이 사라
+		this.connectionMaker = connectionMaker;		
 	}
 	
 	public void add(User user) throws ClassNotFoundException, SQLException {
-		// 인터페이스에 정의된 메소드를 사용하므로 클래스가 바뀌어도 걱정없
 		Connection c = connectionMaker.makeConnection();
 		
 		PreparedStatement ps = c.prepareStatement("INSERT INTO USERS(ID, NAME, PASSWORD) VALUES (?, ?, ?)");
@@ -50,24 +48,5 @@ public class UserDao {
 		c.close();
 		
 		return user;
-	}
-	
-	public static void main(String[] args) throws ClassNotFoundException, SQLException{
-		UserDao dao = new UserDao();
-		
-		User user = new User();
-		user.setId("whiteship");
-		user.setName("백기선");
-		user.setPassword("married");
-		
-		dao.add(user);
-		
-		System.out.println(user.getId() + "등록 성공");
-		
-		User user2 = dao.get(user.getId());
-		System.out.println(user2.getName());
-		System.out.println(user2.getPassword());
-		
-		System.out.println(user2.getId() + "조회 성공");
 	}
 }
