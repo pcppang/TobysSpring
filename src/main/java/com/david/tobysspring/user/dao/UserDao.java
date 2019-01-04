@@ -9,15 +9,17 @@ import com.david.tobysspring.user.domain.User;
 
 public class UserDao {
 	
-	private SimpleConnectionMaker simpleConnectionMaker;
+	// 인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보 알 필요 없음 
+	private ConnectionMaker connectionMaker;
 	
 	public UserDao() {
-		// 한 번만 만들어 인스턴스 변수에 저장해두고 메소드에서 사용하게 한다.
-		simpleConnectionMaker = new SimpleConnectionMaker();		
+		// 그러나 여기에 클래스 이름이 나옴 
+		connectionMaker = new DConnectionMaker();		
 	}
 	
 	public void add(User user) throws ClassNotFoundException, SQLException {
-		Connection c = simpleConnectionMaker.makeNewConnection();
+		// 인터페이스에 정의된 메소드를 사용하므로 클래스가 바뀌어도 걱정없
+		Connection c = connectionMaker.makeConnection();
 		
 		PreparedStatement ps = c.prepareStatement("INSERT INTO USERS(ID, NAME, PASSWORD) VALUES (?, ?, ?)");
 		ps.setString(1, user.getId());
@@ -31,7 +33,7 @@ public class UserDao {
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException {
-		Connection c = simpleConnectionMaker.makeNewConnection();
+		Connection c = connectionMaker.makeConnection();
 		
 		PreparedStatement ps = c.prepareStatement("SELECT * FROM USERS WHERE ID = ?");
 		ps.setString(1, id);
