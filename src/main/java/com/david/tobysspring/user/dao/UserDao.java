@@ -1,16 +1,23 @@
 package com.david.tobysspring.user.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.david.tobysspring.user.domain.User;
 
-public abstract class UserDao {
+public class UserDao {
+	
+	private SimpleConnectionMaker simpleConnectionMaker;
+	
+	public UserDao() {
+		// 한 번만 만들어 인스턴스 변수에 저장해두고 메소드에서 사용하게 한다.
+		simpleConnectionMaker = new SimpleConnectionMaker();		
+	}
+	
 	public void add(User user) throws ClassNotFoundException, SQLException {
-		Connection c = getConnection();
+		Connection c = simpleConnectionMaker.makeNewConnection();
 		
 		PreparedStatement ps = c.prepareStatement("INSERT INTO USERS(ID, NAME, PASSWORD) VALUES (?, ?, ?)");
 		ps.setString(1, user.getId());
@@ -24,7 +31,7 @@ public abstract class UserDao {
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException {
-		Connection c = getConnection();
+		Connection c = simpleConnectionMaker.makeNewConnection();
 		
 		PreparedStatement ps = c.prepareStatement("SELECT * FROM USERS WHERE ID = ?");
 		ps.setString(1, id);
@@ -43,10 +50,8 @@ public abstract class UserDao {
 		return user;
 	}
 	
-	public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
-	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
-		NUserDao dao = new NUserDao();
+		UserDao dao = new UserDao();
 		
 		User user = new User();
 		user.setId("whiteship");
@@ -62,27 +67,5 @@ public abstract class UserDao {
 		System.out.println(user2.getPassword());
 		
 		System.out.println(user2.getId() + "조회 성공");
-	}
-}
-
-// Oracle을 사용하는 N사의 UserDao
-class NUserDao extends UserDao {
-	@Override
-	public Connection getConnection() throws ClassNotFoundException, SQLException{
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "spring", "book");
-	
-		return c;
-	}
-}
-
-// MySql을 사용하는 D사의 UserDao
-class DUserDao extends UserDao {
-	@Override
-	public Connection getConnection() throws ClassNotFoundException, SQLException{
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection c = DriverManager.getConnection("jdbc:mysql://localhost/springbook", "spring", "book");
-	
-		return c;
 	}
 }
