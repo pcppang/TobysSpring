@@ -8,13 +8,12 @@ import java.sql.SQLException;
 import com.david.tobysspring.user.domain.User;
 
 public class UserDao {
-	// 초기에 설정하면 사용 중에는 바뀌지 않는 읽기 전용 인스턴스 변수
 	private ConnectionMaker connectionMaker;
 
-	public UserDao(ConnectionMaker connectionMaker) {
+	public void setConnectionMaker(ConnectionMaker connectionMaker) {
 		this.connectionMaker = connectionMaker;
 	}
-	
+
 	public void add(User user) throws ClassNotFoundException, SQLException {
 		Connection c = connectionMaker.makeConnection();
 		
