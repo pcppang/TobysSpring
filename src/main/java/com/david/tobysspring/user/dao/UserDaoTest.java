@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 import java.sql.SQLException;
 
 import org.junit.Test;
-import org.junit.runner.JUnitCore;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
@@ -26,6 +25,9 @@ public class UserDaoTest {
 		user.setName("백기선");
 		user.setPassword("married");
 		
+		dao.deleteAll();
+        assertThat(dao.getCount(), is(0));
+        
 		dao.add(user);
 		assertThat(dao.getCount(), is(1));
 		
