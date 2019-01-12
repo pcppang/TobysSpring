@@ -1,17 +1,24 @@
 package com.david.tobysspring.user.dao;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.sql.SQLException;
 
+import org.junit.Test;
+import org.junit.runner.JUnitCore;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import com.david.tobysspring.user.domain.User;
 
 public class UserDaoTest {
-	public static void main(String[] args) throws ClassNotFoundException, SQLException{
-		ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
-		UserDao dao = context.getBean("userDao", UserDao.class);
+    // JUnit에게 테스트 메소드임을 알려줌
+    @Test
+    // JUnit 테스트 메소드는 반드시 public으로 선언되어야 함
+    public void addAndGet() throws SQLException, ClassNotFoundException {
+        ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
+        UserDao dao = context.getBean("userDao", UserDao.class);
 		
 		User user = new User();
 		user.setId("whiteship");
@@ -24,12 +31,11 @@ public class UserDaoTest {
 		
 		User user2 = dao.get(user.getId());
 		
-		if (!user.getName().equals(user2.getName())) {
-			System.out.println("테스트 실패 (name)");
-		} else if (!user.getPassword().equals(user2.getPassword())) {
-			System.out.println("테스트 실패 (password)");
-		} else {
-			System.out.println(user.getId() + "조회 성공");
-		}
+		assertThat(user2.getName(), is(user.getName()));
+		assertThat(user2.getPassword(), is(user.getPassword()));	
+	}
+    
+    public static void main(String[] args) {
+		JUnitCore.main("com.david.tobysspring.user.dao.UserDaoTest");
 	}
 }
