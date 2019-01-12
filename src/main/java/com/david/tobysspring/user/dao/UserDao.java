@@ -16,7 +16,7 @@ public class UserDao {
 		this.dataSource = dataSource;
 	}
 
-	public void add(User user) throws ClassNotFoundException, SQLException {
+	public void add(User user) throws SQLException {
 		Connection c = dataSource.getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("INSERT INTO USERS(ID, NAME, PASSWORD) VALUES (?, ?, ?)");
@@ -30,7 +30,7 @@ public class UserDao {
 		c.close();
 	}
 	
-	public User get(String id) throws ClassNotFoundException, SQLException {
+	public User get(String id) throws SQLException {
 		Connection c = dataSource.getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("SELECT * FROM USERS WHERE ID = ?");
@@ -48,5 +48,32 @@ public class UserDao {
 		c.close();
 		
 		return user;
+	}
+	
+	public void deleteAll() throws SQLException {
+	    Connection c = dataSource.getConnection();
+
+	    PreparedStatement ps = c.prepareStatement("DELETE FROM users WHERE 1=1");
+	    ps.executeUpdate();
+
+	    ps.close();
+	    c.close();
+	}
+	
+	public int getCount() throws SQLException {
+	    Connection c = dataSource.getConnection();
+
+	    PreparedStatement ps = c.prepareStatement("SELECT COUNT(*) FROM users");
+
+	    ResultSet rs = ps.executeQuery();
+	    rs.next();
+
+	    int count = rs.getInt(1);
+
+	    rs.close();
+	    ps.close();
+	    c.close();
+
+	    return count;
 	}
 }
