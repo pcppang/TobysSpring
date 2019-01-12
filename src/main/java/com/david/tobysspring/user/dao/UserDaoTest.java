@@ -13,12 +13,13 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import com.david.tobysspring.user.domain.User;
 
 public class UserDaoTest {
-    // JUnit에게 테스트 메소드임을 알려줌
     @Test
-    // JUnit 테스트 메소드는 반드시 public으로 선언되어야 함
-    public void addAndGet() throws SQLException, ClassNotFoundException {
+    public void addAndGet() throws SQLException {
         ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
         UserDao dao = context.getBean("userDao", UserDao.class);
+        
+        dao.deleteAll();
+        assertThat(dao.getCount(), is(0));
 		
 		User user = new User();
 		user.setId("whiteship");
@@ -26,6 +27,7 @@ public class UserDaoTest {
 		user.setPassword("married");
 		
 		dao.add(user);
+		assertThat(dao.getCount(), is(1));
 		
 		System.out.println(user.getId() + "등록 성공");
 		
@@ -33,9 +35,5 @@ public class UserDaoTest {
 		
 		assertThat(user2.getName(), is(user.getName()));
 		assertThat(user2.getPassword(), is(user.getPassword()));	
-	}
-    
-    public static void main(String[] args) {
-		JUnitCore.main("com.david.tobysspring.user.dao.UserDaoTest");
 	}
 }
