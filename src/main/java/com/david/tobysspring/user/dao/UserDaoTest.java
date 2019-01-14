@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.sql.SQLException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
@@ -13,11 +14,16 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.david.tobysspring.user.domain.User;
 
 public class UserDaoTest {
+	private UserDao dao;
+	
+	@Before
+	public void setUp() {
+		ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
+        this.dao = context.getBean("userDao", UserDao.class);
+	}
+	
     @Test
-    public void addAndGet() throws SQLException {
-        ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
-        UserDao dao = context.getBean("userDao", UserDao.class);
-		
+    public void addAndGet() throws SQLException {        
 		User user1 = new User("gyumee", "박성철", "springno1");
 		User user2 = new User("leegw700", "이길원", "springno2");
 		
@@ -39,9 +45,6 @@ public class UserDaoTest {
     
     @Test
     public void count() throws SQLException {
-    	ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
-    	
-    	UserDao dao = context.getBean("userDao", UserDao.class);
     	User user1 = new User("gyumee", "박성철", "springno1");
     	User user2 = new User("leegw700", "이길원", "springno2");
     	User user3 = new User("bumjin", "박범진", "springno3");
@@ -59,17 +62,11 @@ public class UserDaoTest {
     	assertThat(dao.getCount(), is(3)); 
     }
     
-    // 테스트 중 발생할 것으로 기대되는 예외 클래스를 지정
     @Test(expected=EmptyResultDataAccessException.class)
     public void getUserFailure() throws SQLException {
-    	ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
-    	
-    	UserDao dao = context.getBean("userDao", UserDao.class);
-    	
     	dao.deleteAll();
     	assertThat(dao.getCount(), is(0));
     	
-    	// 여기서 예외가 발생해야 한다.
     	dao.get("unknown_id");
     }
 }
