@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.david.tobysspring.user.domain.User;
 
@@ -56,5 +57,19 @@ public class UserDaoTest {
     	
     	dao.add(user3);
     	assertThat(dao.getCount(), is(3)); 
+    }
+    
+    // 테스트 중 발생할 것으로 기대되는 예외 클래스를 지정
+    @Test(expected=EmptyResultDataAccessException.class)
+    public void getUserFailure() throws SQLException {
+    	ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
+    	
+    	UserDao dao = context.getBean("userDao", UserDao.class);
+    	
+    	dao.deleteAll();
+    	assertThat(dao.getCount(), is(0));
+    	
+    	// 여기서 예외가 발생해야 한다.
+    	dao.get("unknown_id");
     }
 }
