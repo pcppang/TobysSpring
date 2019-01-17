@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.david.tobysspring.user.domain.User;
@@ -71,7 +70,7 @@ public class UserDao {
 		
 		try { 
 			c = dataSource.getConnection();
-			ps = c.prepareStatement("DELETE FROM users WHERE 1=1");
+			ps = makeStatement(c);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			throw e;
@@ -132,5 +131,11 @@ public class UserDao {
 		}
 		
 		return count;
+	}
+	
+	public PreparedStatement makeStatement(Connection c) throws SQLException {
+		PreparedStatement ps;
+		ps = c.prepareStatement("DELETE FROM users WHERE 1=1");
+		return ps;
 	}
 }
