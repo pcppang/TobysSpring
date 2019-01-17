@@ -24,7 +24,7 @@ public class UserDaoTest {
 
 	@Before
 	public void setUp() {		
-		dao = new UserDao();
+		dao = new UserDaoDeleteAll();
 		
 		DataSource dataSource = new SingleConnectionDataSource("jdbc:oracle:thin:@localhost:1521:xe", "springbook_test", "test", true);
 		dao.setDataSource(dataSource);

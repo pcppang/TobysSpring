@@ -11,7 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.david.tobysspring.user.domain.User;
 
-public class UserDao {
+public abstract class UserDao {
 	private DataSource dataSource;
 	
 	public void setDataSource(DataSource dataSource) {
@@ -70,7 +70,9 @@ public class UserDao {
 		
 		try { 
 			c = dataSource.getConnection();
+			
 			ps = makeStatement(c);
+			
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			throw e;
@@ -132,10 +134,14 @@ public class UserDao {
 		
 		return count;
 	}
-	
-	public PreparedStatement makeStatement(Connection c) throws SQLException {
-		PreparedStatement ps;
-		ps = c.prepareStatement("DELETE FROM users WHERE 1=1");
+
+	abstract protected PreparedStatement makeStatement(Connection c) throws SQLException;	
+}
+
+class UserDaoDeleteAll extends UserDao {
+	@Override
+	protected PreparedStatement makeStatement(Connection c) throws SQLException {
+		PreparedStatement ps = c.prepareStatement("DELETE FROM users WHERE 1=1");
 		return ps;
 	}
 }
