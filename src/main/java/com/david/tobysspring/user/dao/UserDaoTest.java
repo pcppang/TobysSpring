@@ -17,6 +17,7 @@ import com.david.tobysspring.user.domain.User;
 
 public class UserDaoTest {
 	UserDao dao;
+	JdbcContext jdbcContext;
 	
 	private User user1;
 	private User user2;
@@ -25,9 +26,13 @@ public class UserDaoTest {
 	@Before
 	public void setUp() {		
 		dao = new UserDao();
+		jdbcContext = new JdbcContext();
 		
 		DataSource dataSource = new SingleConnectionDataSource("jdbc:oracle:thin:@localhost:1521:xe", "springbook_test", "test", true);
 		dao.setDataSource(dataSource);
+		
+		jdbcContext.setDataSource(dataSource);
+		dao.setJdbcContext(jdbcContext);
 		
         this.user1 = new User("gyumee", "박성철", "springno1");
     	this.user2 = new User("leegw700", "이길원", "springno2");
