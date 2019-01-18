@@ -46,6 +46,25 @@ public class UserDao {
 	}
 
 	public void add(User user) throws SQLException {
+		class AddAllStatement implements StatementStrategy {
+			User user;
+			
+			public AddAllStatement(User user) {
+				this.user = user;
+			}
+			
+			@Override
+			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+				PreparedStatement ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES (?, ?, ?)");
+				
+				ps.setString(1, user.getId());
+				ps.setString(2, user.getName());
+				ps.setString(3, user.getPassword());
+				
+				return ps;
+			}
+		}
+		
 		StatementStrategy st = new AddAllStatement(user);
 		jdbcContextWithStatementStrategy(st);
 	}
@@ -83,6 +102,14 @@ public class UserDao {
 	}
 	
 	public void deleteAll() throws SQLException {
+		class DeleteAllStatement implements StatementStrategy {
+			@Override
+			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+				PreparedStatement ps = c.prepareStatement("DELETE FROM users WHERE 1=1");
+				return ps;
+			}
+		}
+		
 		StatementStrategy st = new DeleteAllStatement();
 		jdbcContextWithStatementStrategy(st);
 	}
@@ -129,31 +156,4 @@ public class UserDao {
 		return count;
 	}
 
-}
-
-class AddAllStatement implements StatementStrategy {
-	User user;
-	
-	public AddAllStatement(User user) {
-		this.user = user;
-	}
-	
-	@Override
-	public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-		PreparedStatement ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES (?, ?, ?)");
-		
-		ps.setString(1, user.getId());
-		ps.setString(2, user.getName());
-		ps.setString(3, user.getPassword());
-		
-		return ps;
-	}
-}
-
-class DeleteAllStatement implements StatementStrategy {
-	@Override
-	public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-		PreparedStatement ps = c.prepareStatement("DELETE FROM users WHERE 1=1");
-		return ps;
-	}
 }
