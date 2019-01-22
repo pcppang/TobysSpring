@@ -13,15 +13,21 @@ import com.david.tobysspring.user.domain.User;
 
 public class UserDao {
 	DataSource dataSource;
-	
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-	
 	private JdbcContext jdbcContext;
 	
-	public void setJdbcContext(JdbcContext jdbcContext) {
-		this.jdbcContext = jdbcContext;
+	/**
+	 * 수정자 메소드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수
+	 * @param dataSource
+	 */
+	public void setDataSource(DataSource dataSource) {
+		// JdbcContext 생성(IoC)
+		this.jdbcContext = new JdbcContext();
+		
+		// 의존 오브젝트 주입(DI)
+		this.jdbcContext.setDataSource(dataSource);
+		
+		// for 아직 JdbcContext를 적용하지 않은 메소드
+		this.dataSource = dataSource;		
 	}
 	
 	public void add(final User user) throws SQLException {
