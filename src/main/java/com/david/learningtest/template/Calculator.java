@@ -6,46 +6,36 @@ import java.io.IOException;
 
 public class Calculator {
 	public int calcSum(String filepath) throws IOException {
-		BufferedReaderCallback sumCallback = new BufferedReaderCallback() {
+		LineCallback sumCallback = new LineCallback() {
 			@Override
-			public Integer doSomethingWithReader(BufferedReader br) throws IOException {
-				Integer sum = 0;
-				String line = null;
-
-				while ((line = br.readLine()) != null) {
-					sum += Integer.valueOf(line);
-				}
-					
-				return sum;
+			public Integer doSomethingWithLine(String line, Integer value) {
+				return value + Integer.valueOf(line);
 			}
 		};
-		return fileReadTemplate(filepath, sumCallback);
+		return lineReadTemplate(filepath, sumCallback, 0);
 	}
 	
 	public Integer calcMultiple(String filepath) throws IOException {
-		BufferedReaderCallback sumCallback = new BufferedReaderCallback() {
+		LineCallback multipleCallback = new LineCallback() {
 			@Override
-			public Integer doSomethingWithReader(BufferedReader br) throws IOException {
-				Integer multifly = 1;
-				String line = null;
-
-				while ((line = br.readLine()) != null) {
-					multifly *= Integer.valueOf(line);
-				}
-					
-				return multifly;
+			public Integer doSomethingWithLine(String line, Integer value) {
+				return value * Integer.valueOf(line);
 			}
 		};
-		return fileReadTemplate(filepath, sumCallback);
+		return lineReadTemplate(filepath, multipleCallback, 1);
 	}
 	
-	public Integer fileReadTemplate(String path, BufferedReaderCallback callback) throws IOException {
+	public Integer lineReadTemplate(String path, LineCallback callback, int initVal) throws IOException {
 		BufferedReader br = null;
-
+		
 		try {
 			br = new BufferedReader(new FileReader(path));
-			int ret = callback.doSomethingWithReader(br);
-			return ret;
+			Integer res = initVal;
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				res = callback.doSomethingWithLine(line, res);
+			}
+			return res;
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw e;
