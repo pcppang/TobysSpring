@@ -2,6 +2,7 @@ package com.david.tobysspring.user.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -44,5 +45,19 @@ public class UserDao {
 	
 	public int getCount() throws SQLException{
 		return this.jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users", Integer.class);
+	}
+
+	public List<User> getAll() {
+		return this.jdbcTemplate.query("SELECT * FROM users ORDER BY id", new Object[] {},
+			new RowMapper<User>() {
+				public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+					User user = new User();
+					user.setId(rs.getString("id"));
+					user.setName(rs.getString("name"));
+					user.setPassword(rs.getString("password"));
+					return user;
+				}
+			}
+		);
 	}	
 }
