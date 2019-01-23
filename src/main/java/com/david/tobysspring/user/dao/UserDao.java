@@ -66,8 +66,8 @@ public class UserDao {
 		return user;
 	}
 	
-	public void deleteAll() throws SQLException {		
-		executeSql("DELETE FROM users WHERE 1=1");
+	public void deleteAll() throws SQLException {
+		this.jdbcContext.executeSql("DELETE FROM users WHERE 1=1");
 	}
 	
 	public int getCount() throws SQLException{
@@ -110,18 +110,5 @@ public class UserDao {
 		}
 		
 		return count;
-	}
-	
-
-	private void executeSql(final String query) throws SQLException {
-		this.jdbcContext.workWithStatementStrategy(
-			new StatementStrategy() {
-				@Override
-				public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-					PreparedStatement ps = c.prepareStatement(query);
-					return ps;
-				}
-			}
-		);
-	}
+	}	
 }
