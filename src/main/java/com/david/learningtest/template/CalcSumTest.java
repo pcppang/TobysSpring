@@ -8,13 +8,14 @@ import java.io.IOException;
 import org.junit.Test;
 
 public class CalcSumTest {
+	Calculator calculator;
+	String numFilePath;
+	
 	@Test
 	public void sumOfNumbers() throws IOException {
-		String path = getClass().getResource("").getPath() + "numbers.txt";
+		this.calculator = new Calculator();
+		this.numFilePath = getClass().getResource("").getPath() + "numbers.txt";
 		
-		Calculator calculator = new Calculator();
-		int sum = calculator.calcSum(path);
-		
-		assertThat(sum, is(10));
+		assertThat(calculator.calcSum(this.numFilePath), is(10));
 	}
 }
