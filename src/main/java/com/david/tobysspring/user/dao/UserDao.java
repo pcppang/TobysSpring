@@ -15,18 +15,9 @@ public class UserDao {
 	DataSource dataSource;
 	private JdbcContext jdbcContext;
 	
-	/**
-	 * 수정자 메소드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수
-	 * @param dataSource
-	 */
 	public void setDataSource(DataSource dataSource) {
-		// JdbcContext 생성(IoC)
 		this.jdbcContext = new JdbcContext();
-		
-		// 의존 오브젝트 주입(DI)
 		this.jdbcContext.setDataSource(dataSource);
-		
-		// for 아직 JdbcContext를 적용하지 않은 메소드
 		this.dataSource = dataSource;		
 	}
 	
@@ -55,10 +46,8 @@ public class UserDao {
 		
 		ResultSet rs = ps.executeQuery();
 		
-		// User는 null로 초기
 		User user = null;
 		
-		// 쿼리 결과가 있을 경우만 User 오브젝트 생성 후 값을 넣어준다.
 		if (rs.next()) {
 			user = new User();
 			user.setId(rs.getString("ID"));
@@ -70,9 +59,7 @@ public class UserDao {
 		ps.close();
 		c.close();
 		
-		// 결과가 없다면 User는 계속 null일 것이다.
 		if (user == null) {
-			// 예외를 던져준다.
 			throw new EmptyResultDataAccessException(1);
 		}
 		
@@ -80,15 +67,7 @@ public class UserDao {
 	}
 	
 	public void deleteAll() throws SQLException {		
-		this.jdbcContext.workWithStatementStrategy(
-			new StatementStrategy() {
-				@Override
-				public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-					PreparedStatement ps = c.prepareStatement("DELETE FROM users WHERE 1=1");
-					return ps;
-				}
-			}
-		);
+		executeSql("DELETE FROM users WHERE 1=1");
 	}
 	
 	public int getCount() throws SQLException{
@@ -131,5 +110,18 @@ public class UserDao {
 		}
 		
 		return count;
+	}
+	
+
+	private void executeSql(final String query) throws SQLException {
+		this.jdbcContext.workWithStatementStrategy(
+			new StatementStrategy() {
+				@Override
+				public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+					PreparedStatement ps = c.prepareStatement(query);
+					return ps;
+				}
+			}
+		);
 	}
 }
