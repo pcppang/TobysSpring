@@ -12,12 +12,10 @@ import org.springframework.jdbc.core.RowMapper;
 import com.david.tobysspring.user.domain.User;
 
 public class UserDao {
-	DataSource dataSource;
 	private JdbcTemplate jdbcTemplate;
 	
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.dataSource = dataSource;
 	}
 	
 	public void add(final User user) throws SQLException {
