@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
@@ -16,7 +17,8 @@ import com.david.tobysspring.user.domain.User;
 
 
 public class UserDaoTest {
-	UserDao dao;
+	@Autowired
+	private UserDao dao;
 	
 	private User user1;
 	private User user2;
@@ -24,10 +26,10 @@ public class UserDaoTest {
 
 	@Before
 	public void setUp() {		
-		dao = new UserDao();
+		dao = new UserDaoJdbc();
 		
 		DataSource dataSource = new SingleConnectionDataSource("jdbc:oracle:thin:@localhost:1521:xe", "springbook_test", "test", true);
-		dao.setDataSource(dataSource);
+		((UserDaoJdbc) dao).setDataSource(dataSource);
 		
         this.user1 = new User("gyumee", "박성철", "springno1");
     	this.user2 = new User("leegw700", "이길원", "springno2");
