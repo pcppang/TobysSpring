@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
@@ -75,6 +76,14 @@ public class UserDaoTest {
     	assertThat(dao.getCount(), is(0));
     	
     	dao.get("unknown_id");
+    }
+    
+    @Test(expected=DuplicateKeyException.class)
+    public void duplicateKey() {
+    	dao.deleteAll();
+    	
+    	dao.add(user1);
+    	dao.add(user1);
     }
     
     @Test
