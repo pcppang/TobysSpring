@@ -40,12 +40,7 @@ public class UserService {
 	}
 	
 	private void upgradeLvl(User user) {
-		if (user.getLvl() == Lvl.BASIC) {
-			user.setLvl(Lvl.SILVER);
-		} else if (user.getLvl() == Lvl.SILVER) {
-			user.setLvl(Lvl.GOLD);
-		}
-		
+		user.upgradeLvl();
 		userDao.update(user);
 	}
 }

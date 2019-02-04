@@ -67,6 +67,15 @@ public class User {
 	public void setRecommend(int recommend) {
 		this.recommend = recommend;
 	}
+	
+	public void upgradeLvl() {
+		Lvl nextLvl = this.lvl.nextLvl();
+		if (nextLvl == null) {
+			throw new IllegalArgumentException(this.lvl + "은 업그레이드가 불가능합니다.");
+		} else {
+			this.lvl = nextLvl;
+		}
+	}
 
 	@Override
 	public String toString() {
