@@ -60,6 +60,24 @@ public class UserServiceTest {
 		checkLvl(users.get(3), Lvl.GOLD);
 		checkLvl(users.get(4), Lvl.GOLD);
 	}
+	
+	@Test
+	public void add() {
+		userDao.deleteAll();
+		
+		User userWithLvl = users.get(4);
+		User userWithoutLvl = users.get(0);
+		userWithoutLvl.setLvl(null);
+		
+		userService.add(userWithLvl);
+		userService.add(userWithoutLvl);
+		
+		User userWithLvlRead = userDao.get(userWithLvl.getId());
+		User userWithoutLvlRead = userDao.get(userWithoutLvl.getId());
+		
+		checkLvl(userWithLvlRead, Lvl.GOLD);
+		checkLvl(userWithoutLvlRead, Lvl.BASIC);
+	}
 
 	private void checkLvl(User user, Lvl expectedLvl) {
 		User userUpdate = userDao.get(user.getId());
