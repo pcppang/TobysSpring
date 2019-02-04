@@ -17,6 +17,7 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 
+import com.david.tobysspring.user.domain.Lvl;
 import com.david.tobysspring.user.domain.User;
 
 
@@ -38,9 +39,9 @@ public class UserDaoTest {
 		this.dataSource = new SingleConnectionDataSource("jdbc:oracle:thin:@localhost:1521:xe", "springbook_test", "test", true);
 		((UserDaoJdbc) dao).setDataSource(dataSource);
 		
-        this.user1 = new User("gyumee", "박성철", "springno1");
-    	this.user2 = new User("leegw700", "이길원", "springno2");
-    	this.user3 = new User("bumjin", "박범진", "springno3");
+        this.user1 = new User("gyumee", "박성철", "springno1", Lvl.BASIC, 1, 0);
+    	this.user2 = new User("leegw700", "이길원", "springno2", Lvl.SILVER, 55, 10);
+    	this.user3 = new User("bumjin", "박범진", "springno3", Lvl.GOLD, 100, 40);
 	}
 	
     @Test
@@ -52,13 +53,11 @@ public class UserDaoTest {
         dao.add(user2);
         assertThat(dao.getCount(), is(2));
 		
-		User userGet1 = dao.get(user1.getId());
-		assertThat(userGet1.getName(), is(user1.getName()));
-		assertThat(userGet1.getPassword(), is(user1.getPassword()));
+		User userget1 = dao.get(user1.getId());
+		checkSameUser(userget1, user1);
 		
-		User userGet2 = dao.get(user2.getId());
-		assertThat(userGet2.getName(), is(user2.getName()));
-		assertThat(userGet2.getPassword(), is(user2.getPassword()));
+		User userget2 = dao.get(user2.getId());
+		checkSameUser(userget2, user2);
 	}
     
     @Test
@@ -136,5 +135,8 @@ public class UserDaoTest {
     	assertThat(user1.getId(), is(user2.getId()));
     	assertThat(user1.getName(), is(user2.getName()));
     	assertThat(user1.getPassword(), is(user2.getPassword()));
+    	assertThat(user1.getLvl(), is(user2.getLvl()));
+    	assertThat(user1.getLogin(), is(user2.getLogin()));
+    	assertThat(user1.getRecommend(), is(user2.getRecommend()));
     }
 }

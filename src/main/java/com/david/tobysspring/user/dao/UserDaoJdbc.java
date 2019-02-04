@@ -10,6 +10,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.david.tobysspring.user.domain.Lvl;
 import com.david.tobysspring.user.domain.User;
 
 public class UserDaoJdbc implements UserDao {
@@ -21,6 +22,9 @@ public class UserDaoJdbc implements UserDao {
 			user.setId(rs.getString("id"));
 			user.setName(rs.getString("name"));
 			user.setPassword(rs.getString("password"));
+			user.setLvl(Lvl.valueOf(rs.getInt("lvl")));
+			user.setLogin(rs.getInt("login"));
+			user.setRecommend(rs.getInt("recommend"));
 			return user;
 		}
 	};
@@ -31,8 +35,10 @@ public class UserDaoJdbc implements UserDao {
 	
 	@Override
 	public void add(final User user) throws DataAccessException {
-		this.jdbcTemplate.update("INSERT INTO users(id, name, password) VALUES (?, ?, ?)", 
-				user.getId(), user.getName(), user.getPassword());
+		this.jdbcTemplate.update("INSERT INTO users(id, name, password, lvl, login, recommend) "
+				+ "VALUES (?, ?, ?, ?, ?, ?)", 
+				user.getId(), user.getName(), user.getPassword(), 
+				user.getLvl().intValue(), user.getLogin(), user.getRecommend());
 	}
 	
 	@Override
