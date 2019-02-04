@@ -71,7 +71,7 @@ public class User {
 	public void upgradeLvl() {
 		Lvl nextLvl = this.lvl.nextLvl();
 		if (nextLvl == null) {
-			throw new IllegalArgumentException(this.lvl + "은 업그레이드가 불가능합니다.");
+			throw new IllegalStateException(this.lvl + "은 업그레이드가 불가능합니다.");
 		} else {
 			this.lvl = nextLvl;
 		}
