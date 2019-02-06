@@ -9,35 +9,29 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.david.tobysspring.user.dao.UserDao;
-import com.david.tobysspring.user.dao.UserDaoJdbc;
 import com.david.tobysspring.user.domain.Lvl;
 import com.david.tobysspring.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/applicationContext.xml")
+@ContextConfiguration(locations="/test-applicationContext.xml")
 public class UserServiceTest {
 	@Autowired UserService userService;
 	@Autowired UserDao userDao;
-	@Autowired DataSource dataSource;
+	@Autowired PlatformTransactionManager transactionManager;
 	
 	List<User> users;
 	
 	@Before
 	public void setUp() {
-		this.dataSource = new SingleConnectionDataSource("jdbc:oracle:thin:@localhost:1521:xe", "springbook_test", "test", true);
-		((UserDaoJdbc) userDao).setDataSource(dataSource);
-		
 		users = Arrays.asList(
 			new User("bumjin", "박범진", "p1", Lvl.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0),
 			new User("joytouch", "강명성", "p2", Lvl.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
@@ -114,8 +108,8 @@ public class UserServiceTest {
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
 		UserService testUserService = new TestUserService(users.get(3).getId());
-		testUserService.setUserDao(this.userDao);
-		testUserService.setDataSource(this.dataSource);
+		testUserService.setUserDao(userDao);
+		testUserService.setTransactionManager(transactionManager);
 		
 		userDao.deleteAll();
 		for  (User user : users) {
