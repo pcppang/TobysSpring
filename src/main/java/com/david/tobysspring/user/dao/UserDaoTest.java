@@ -39,9 +39,9 @@ public class UserDaoTest {
 		this.dataSource = new SingleConnectionDataSource("jdbc:oracle:thin:@localhost:1521:xe", "springbook_test", "test", true);
 		((UserDaoJdbc) dao).setDataSource(dataSource);
 		
-        this.user1 = new User("gyumee", "박성철", "springno1", Lvl.BASIC, 1, 0);
-    	this.user2 = new User("leegw700", "이길원", "springno2", Lvl.SILVER, 55, 10);
-    	this.user3 = new User("bumjin", "박범진", "springno3", Lvl.GOLD, 100, 40);
+        this.user1 = new User("gyumee", "박성철", "springno1", "springno1@test.com", Lvl.BASIC, 1, 0);
+    	this.user2 = new User("leegw700", "이길원", "springno2", "springno2@test.com", Lvl.SILVER, 55, 10);
+    	this.user3 = new User("bumjin", "박범진", "springno3", "springno3@test.com", Lvl.GOLD, 100, 40);
 	}
 	
     @Test

@@ -4,6 +4,7 @@ public class User {
 	String id;
 	String name;
 	String password;
+	String email;
 	Lvl lvl;
 	int login;
 	int recommend;
@@ -11,10 +12,11 @@ public class User {
 	public User() {
 	}
 
-	public User(String id, String name, String password, Lvl lvl, int login, int recommend) {
+	public User(String id, String name, String password, String email, Lvl lvl, int login, int recommend) {
 		this.id = id;
 		this.name = name;
 		this.password = password;
+		this.email = email;
 		this.lvl = lvl;
 		this.login = login;
 		this.recommend = recommend;
@@ -44,6 +46,14 @@ public class User {
 		this.password = password;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public Lvl getLvl() {
 		return lvl;
 	}
@@ -67,19 +77,10 @@ public class User {
 	public void setRecommend(int recommend) {
 		this.recommend = recommend;
 	}
-	
-	public void upgradeLvl() {
-		Lvl nextLvl = this.lvl.nextLvl();
-		if (nextLvl == null) {
-			throw new IllegalStateException(this.lvl + "은 업그레이드가 불가능합니다.");
-		} else {
-			this.lvl = nextLvl;
-		}
-	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", password=" + password + ", lvl=" + lvl + ", login=" + login
-				+ ", recommend=" + recommend + "]";
+		return "User [id=" + id + ", name=" + name + ", password=" + password + ", email=" + email + ", lvl=" + lvl
+				+ ", login=" + login + ", recommend=" + recommend + "]";
 	}
 }
