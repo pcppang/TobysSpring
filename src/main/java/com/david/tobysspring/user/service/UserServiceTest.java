@@ -1,7 +1,7 @@
 package com.david.tobysspring.user.service;
 
-import static com.david.tobysspring.user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
-import static com.david.tobysspring.user.service.UserService.MIN_RECOMMEND_FOR_GOLD;
+import static com.david.tobysspring.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
+import static com.david.tobysspring.user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -30,6 +29,7 @@ import com.david.tobysspring.user.domain.User;
 @ContextConfiguration(locations="/test-applicationContext.xml")
 public class UserServiceTest {
 	@Autowired UserService userService;
+	@Autowired UserServiceImpl userServiceImpl;
 	@Autowired UserDao userDao;
 	@Autowired PlatformTransactionManager transactionManager;
 	@Autowired MailSender mailSender;
@@ -72,7 +72,6 @@ public class UserServiceTest {
 	 * 레벨 업그레이드 확인 테스트
 	 */
 	@Test
-	@DirtiesContext
 	public void upgradeLvls() throws Exception {
 		userDao.deleteAll();
 		
@@ -81,7 +80,7 @@ public class UserServiceTest {
 		}
 		
 		MockMailSender mockMailSender = new MockMailSender();
-		userService.setMailSender(mockMailSender);
+		userServiceImpl.setMailSender(mockMailSender);
 		
 		userService.upgradeLvls();
 		
@@ -100,7 +99,7 @@ public class UserServiceTest {
 	/**
 	 * 작업 도중 예외 발생 시 이전 작업이 롤백되는지에 대한 테스트
 	 */
-	static class TestUserService extends UserService {
+	static class TestUserService extends UserServiceImpl {
 		private String id;
 		
 		private TestUserService(String id) {
@@ -122,10 +121,13 @@ public class UserServiceTest {
 	
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
-		UserService testUserService = new TestUserService(users.get(3).getId());
+		TestUserService testUserService = new TestUserService(users.get(3).getId());
 		testUserService.setUserDao(userDao);
-		testUserService.setTransactionManager(transactionManager);
 		testUserService.setMailSender(mailSender);
+		
+		UserServiceTx txUserService = new UserServiceTx();
+		txUserService.setTransactionManager(transactionManager);
+		txUserService.setUserService(testUserService);
 		
 		userDao.deleteAll();
 		for  (User user : users) {
@@ -133,7 +135,7 @@ public class UserServiceTest {
 		}
 		
 		try {
-			testUserService.upgradeLvls();
+			txUserService.upgradeLvls();
 			fail("TestUserServiceException expected");
 		} catch (TestUserServiceException e) {
 		}
