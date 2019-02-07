@@ -13,6 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -27,6 +30,7 @@ public class UserServiceTest {
 	@Autowired UserService userService;
 	@Autowired UserDao userDao;
 	@Autowired PlatformTransactionManager transactionManager;
+	@Autowired MailSender mailSender;
 	
 	List<User> users;
 	
@@ -110,6 +114,7 @@ public class UserServiceTest {
 		UserService testUserService = new TestUserService(users.get(3).getId());
 		testUserService.setUserDao(userDao);
 		testUserService.setTransactionManager(transactionManager);
+		testUserService.setMailSender(mailSender);
 		
 		userDao.deleteAll();
 		for  (User user : users) {
@@ -123,6 +128,19 @@ public class UserServiceTest {
 		}
 		
 		checkLvlUpgraded(users.get(1), false);
+	}
+	
+	/**
+	 * 메일 발송 내부 클래
+	 */
+	static class DummyMailSender implements MailSender {
+		@Override
+		public void send(SimpleMailMessage simpleMessage) throws MailException {
+		}
+
+		@Override
+		public void send(SimpleMailMessage... simpleMessages) throws MailException {
+		}
 	}
 	
 	/**
