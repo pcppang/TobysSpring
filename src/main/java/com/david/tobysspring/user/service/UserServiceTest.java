@@ -28,7 +28,6 @@ import com.david.tobysspring.user.domain.User;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/test-applicationContext.xml")
 public class UserServiceTest {
-	@Autowired UserService userService;
 	@Autowired UserServiceImpl userServiceImpl;
 	@Autowired UserDao userDao;
 	@Autowired PlatformTransactionManager transactionManager;
@@ -58,8 +57,8 @@ public class UserServiceTest {
 		User userWithoutLvl = users.get(0);
 		userWithoutLvl.setLvl(null);
 		
-		userService.add(userWithLvl);
-		userService.add(userWithoutLvl);
+		userServiceImpl.add(userWithLvl);
+		userServiceImpl.add(userWithoutLvl);
 		
 		User userWithLvlRead = userDao.get(userWithLvl.getId());
 		User userWithoutLvlRead = userDao.get(userWithoutLvl.getId());
@@ -73,22 +72,20 @@ public class UserServiceTest {
 	 */
 	@Test
 	public void upgradeLvls() throws Exception {
-		userDao.deleteAll();
+		UserServiceImpl userServiceImpl = new UserServiceImpl();
 		
-		for (User user : users) {
-			userDao.add(user);
-		}
+		MockUserDao mockUserDao = new MockUserDao(this.users);
+		userServiceImpl.setUserDao(mockUserDao);
 		
 		MockMailSender mockMailSender = new MockMailSender();
 		userServiceImpl.setMailSender(mockMailSender);
 		
-		userService.upgradeLvls();
+		userServiceImpl.upgradeLvls();
 		
-		checkLvlUpgraded(users.get(0), false);
-		checkLvlUpgraded(users.get(1), true);
-		checkLvlUpgraded(users.get(2), false);
-		checkLvlUpgraded(users.get(3), true);
-		checkLvlUpgraded(users.get(4), false);
+		List<User> updated = mockUserDao.getUpdated();
+		assertThat(updated.size(), is(2));
+		checkUserAndLvl(updated.get(0), "joytouch", Lvl.SILVER);
+		checkUserAndLvl(updated.get(1), "madnite1", Lvl.GOLD);
 		
 		List<String> request = mockMailSender.getRequests();
 		assertThat(request.size(), is(2));
@@ -96,6 +93,11 @@ public class UserServiceTest {
 		assertThat(request.get(1), is(users.get(3).getEmail()));
 	}
 	
+	private void checkUserAndLvl(User updated, String expectedId, Lvl expectedLvl) {
+		assertThat(updated.getId(), is(expectedId));
+		assertThat(updated.getLvl(), is(expectedLvl));
+	}
+
 	/**
 	 * 작업 도중 예외 발생 시 이전 작업이 롤백되는지에 대한 테스트
 	 */
@@ -170,6 +172,57 @@ public class UserServiceTest {
 
 		@Override
 		public void send(SimpleMailMessage... mailMessage) throws MailException {
+		}
+	}
+	
+	/**
+	 * UserDao 테스트 대역
+	 */
+	static class MockUserDao implements UserDao {
+		private List<User> users;
+		private List<User> updated = new ArrayList<User>();
+		
+		private MockUserDao() {
+		}
+		
+		private MockUserDao(List<User> users) {
+			this.users = users;
+		}
+		
+		public List<User> getUpdated() {
+			return this.updated;
+		}
+		
+		// Stub
+		@Override
+		public List<User> getAll() {
+			return this.users;
+		}
+		
+		// Mock Object
+		@Override
+		public void update(User user) {
+			updated.add(user);
+		}
+
+		@Override
+		public void add(User user) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public User get(String id) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void deleteAll() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int getCount() {
+			throw new UnsupportedOperationException();
 		}
 	}
 	
