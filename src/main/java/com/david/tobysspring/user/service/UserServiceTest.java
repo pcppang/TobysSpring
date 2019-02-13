@@ -19,16 +19,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import com.david.tobysspring.user.dao.UserDao;
 import com.david.tobysspring.user.domain.Lvl;
@@ -37,11 +34,10 @@ import com.david.tobysspring.user.domain.User;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/test-applicationContext.xml")
 public class UserServiceTest {
-	@Autowired UserService userServiceImpl;
+	@Autowired UserService userService;
+	@Autowired UserService testUserService; 
 	@Autowired UserDao userDao;
-	@Autowired PlatformTransactionManager transactionManager;
 	@Autowired MailSender mailSender;
-	@Autowired ApplicationContext context;
 	
 	List<User> users;
 	
@@ -67,8 +63,8 @@ public class UserServiceTest {
 		User userWithoutLvl = users.get(0);
 		userWithoutLvl.setLvl(null);
 		
-		userServiceImpl.add(userWithLvl);
-		userServiceImpl.add(userWithoutLvl);
+		userService.add(userWithLvl);
+		userService.add(userWithoutLvl);
 		
 		User userWithLvlRead = userDao.get(userWithLvl.getId());
 		User userWithoutLvlRead = userDao.get(userWithoutLvl.getId());
@@ -138,12 +134,8 @@ public class UserServiceTest {
 	/**
 	 * 작업 도중 예외 발생 시 이전 작업이 롤백되는지에 대한 테스트
 	 */
-	static class TestUserService extends UserServiceImpl {
-		private String id;
-		
-		private TestUserService(String id) {
-			this.id = id;
-		}
+	static class TestUserServiceImpl extends UserServiceImpl {
+		private String id = "madnite1";
 		
 		@Override
 		protected void upgradeLvl(User user) {
@@ -160,22 +152,14 @@ public class UserServiceTest {
 	
 	@Test
 	@DirtiesContext
-	public void upgradeAllOrNothing() throws Exception {
-		TestUserService testUserService = new TestUserService(users.get(3).getId());
-		testUserService.setUserDao(userDao);
-		testUserService.setMailSender(mailSender);
-		
-		ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-		txProxyFactoryBean.setTarget(testUserService);
-		UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-		
+	public void upgradeAllOrNothing() throws Exception {		
 		userDao.deleteAll();
 		for  (User user : users) {
 			userDao.add(user);
 		}
 		
 		try {
-			txUserService.upgradeLvls();
+			this.testUserService.upgradeLvls();
 			fail("TestUserServiceException expected");
 		} catch (TestUserServiceException e) {
 		}

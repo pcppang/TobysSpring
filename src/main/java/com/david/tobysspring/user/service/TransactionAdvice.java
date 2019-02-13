@@ -8,7 +8,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 public class TransactionAdvice implements MethodInterceptor {
 	PlatformTransactionManager transactionManager;
-	
+
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
@@ -16,7 +16,7 @@ public class TransactionAdvice implements MethodInterceptor {
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
-		
+
 		try {
 			Object ret = invocation.proceed();
 			this.transactionManager.commit(status);

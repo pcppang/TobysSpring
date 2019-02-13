@@ -4,42 +4,42 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 		http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
-	<bean id="transactionAdvice" class="com.david.tobysspring.user.service.TransactionAdvice">
-		<property name="transactionManager" ref="transactionManager" />
-	</bean>
-	
-	<bean id="transactionPointCut" class="org.springframework.aop.support.NameMatchMethodPointcut">
-		<property name="mappedName" value="upgrade*" />
-	</bean>
-	
-	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-		<property name="advice" ref="transactionAdvice" />
-		<property name="pointcut" ref="transactionPointCut" />
-	</bean>
-	
-	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="target" ref="userServiceImpl" />
-		<property name="interceptorNames">
-			<list>
-				<value>transactionAdvisor</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="userServiceImpl" class="com.david.tobysspring.user.service.UserServiceImpl">
-		<property name="userDao" ref="userDao" />
-		<property name="mailSender" ref="mailSender" />
-	</bean>
-	
-	<bean id="userDao" class="com.david.tobysspring.user.dao.UserDaoJdbc">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-	
+	<!-- 트랜잭션 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
+	<bean id="transactionAdvice" class="com.david.tobysspring.user.service.TransactionAdvice">
+	       <property name="transactionManager" ref="transactionManager" />
+	</bean>
+	
+	<bean id="transactionPointCut" class="com.david.tobysspring.user.service.NameMatchClassMethodPointcut">
+		<property name="mappedClassName" value="*ServiceImpl" />
+		<property name="mappedName" value="upgrade*" />
+	</bean>
+	
+	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="advice" ref="transactionAdvice" />
+        <property name="pointcut" ref="transactionPointCut" />
+	</bean>
+	
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
+	
+	<!-- UserService -->
+	<bean id="userService" class="com.david.tobysspring.user.service.UserServiceImpl">
+		<property name="userDao" ref="userDao" />
+		<property name="mailSender" ref="mailSender" />
+	</bean>
+	
+	<bean id="testUserService" 
+		class="com.david.tobysspring.user.service.UserServiceTest$TestUserServiceImpl" parent="userService" />
+	
 	<bean id="mailSender" class="com.david.tobysspring.user.service.UserServiceTest$DummyMailSender" />
+	
+	<!-- UserDao -->
+	<bean id="userDao" class="com.david.tobysspring.user.dao.UserDaoJdbc">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
 	
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver" />
