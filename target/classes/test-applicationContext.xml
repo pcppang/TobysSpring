@@ -4,11 +4,26 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 		http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
-	<bean id="userService" class="com.david.tobysspring.user.service.TxProxyFactoryBean">
-		<property name="target" ref="userServiceImpl" />
+	<bean id="transactionAdvice" class="com.david.tobysspring.user.service.TransactionAdvice">
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="pattern" value="upgradeLvls" />
-		<property name="serviceInterface" value="com.david.tobysspring.user.service.UserService" />
+	</bean>
+	
+	<bean id="transactionPointCut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+		<property name="mappedName" value="upgrade*" />
+	</bean>
+	
+	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="transactionAdvice" />
+		<property name="pointcut" ref="transactionPointCut" />
+	</bean>
+	
+	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target" ref="userServiceImpl" />
+		<property name="interceptorNames">
+			<list>
+				<value>transactionAdvisor</value>
+			</list>
+		</property>
 	</bean>
 	
 	<bean id="userServiceImpl" class="com.david.tobysspring.user.service.UserServiceImpl">

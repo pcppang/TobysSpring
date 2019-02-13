@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
@@ -36,7 +37,7 @@ import com.david.tobysspring.user.domain.User;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/test-applicationContext.xml")
 public class UserServiceTest {
-	@Autowired UserServiceImpl userServiceImpl;
+	@Autowired UserService userServiceImpl;
 	@Autowired UserDao userDao;
 	@Autowired PlatformTransactionManager transactionManager;
 	@Autowired MailSender mailSender;
@@ -164,9 +165,9 @@ public class UserServiceTest {
 		testUserService.setUserDao(userDao);
 		testUserService.setMailSender(mailSender);
 		
-		TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
+		ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
 		txProxyFactoryBean.setTarget(testUserService);
-		UserService txUserService = (UserService)txProxyFactoryBean.getObject();
+		UserService txUserService = (UserService) txProxyFactoryBean.getObject();
 		
 		userDao.deleteAll();
 		for  (User user : users) {
