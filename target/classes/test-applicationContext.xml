@@ -4,11 +4,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 		http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
-	<bean id="userService" class="com.david.tobysspring.user.service.UserServiceTx">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="userService" ref="userServiceImpl" />
-	</bean>
-	
 	<bean id="userServiceImpl" class="com.david.tobysspring.user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
 		<property name="mailSender" ref="mailSender" />
