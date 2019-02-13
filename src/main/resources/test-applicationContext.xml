@@ -4,6 +4,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 		http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
+	<bean id="userService" class="com.david.tobysspring.user.service.TxProxyFactoryBean">
+		<property name="target" ref="userServiceImpl" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="pattern" value="upgradeLvls" />
+		<property name="serviceInterface" value="com.david.tobysspring.user.service.UserService" />
+	</bean>
+	
 	<bean id="userServiceImpl" class="com.david.tobysspring.user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
 		<property name="mailSender" ref="mailSender" />
