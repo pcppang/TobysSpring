@@ -2,6 +2,7 @@ package com.david.tobysspring.user.service;
 
 import static com.david.tobysspring.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
 import static com.david.tobysspring.user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -148,6 +149,11 @@ public class UserServiceTest {
 	
 	static class TestUserServiceException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
+	}
+	
+	@Test
+	public void advisorAutoProxyCreator() {
+		assertThat(testUserService, instanceOf(java.lang.reflect.Proxy.class));
 	}
 	
 	@Test
