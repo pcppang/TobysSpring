@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-		http://www.springframework.org/schema/beans/spring-beans.xsd">
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 	
 	<!-- 트랜잭션 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -13,16 +16,10 @@
 	       <property name="transactionManager" ref="transactionManager" />
 	</bean>
 	
-	<bean id="transactionPointCut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
-		<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))" />
-	</bean>
-	
-	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-        <property name="advice" ref="transactionAdvice" />
-        <property name="pointcut" ref="transactionPointCut" />
-	</bean>
-	
-	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
+	<aop:config>
+		<aop:pointcut id="transactionPointCut" expression="execution(* *..*ServiceImpl.upgrade*(..))" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointCut"/>
+	</aop:config>
 	
 	<!-- UserService -->
 	<bean id="userService" class="com.david.tobysspring.user.service.UserServiceImpl">
